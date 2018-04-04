@@ -366,12 +366,28 @@ void SinglyList<T>::replaceAll(T key,T x)                           //将所有�
 template <class T>
 Node<T>* SinglyList<T>::first()                                       //返回单链表第0个元素结点(非头结点)
 {
-  return this->head->next;
+  if(this->head->next != NULL)
+    return this->head->next;
+  else
+    return NULL;
 }
 template <class T>
 Node<T>* SinglyList<T>::next(Node<T> *p)                   //返回p的后继结点
 {
-  return p->next;
+  if(p->next != NULL)
+    {
+      return p->next;
+    }
+  else
+    {
+      Node<T> *rear = this->head;
+      while(rear->next != NULL)
+	{
+	  if(rear->next->data == p->data)
+	    return rear->next->next;
+	  rear = rear->next;
+	}
+    }
 }
 template <class T>
 Node<T>* SinglyList<T>::previous(Node<T> *p)             //返回p的前驱结点
@@ -397,13 +413,12 @@ Node<T>* SinglyList<T>::last()                                        //返回�
 template <class T>
 bool SinglyList<T>::isSorted(bool asc)                  //判断是否已排序，asc指定升序或降序,true升序，false降序，默认升序
 {
-  Node<T> *front = this->head->next,*p = this->head->next->next;
-  while(p != NULL &&(asc ? front->data >=p->data : front->data <= p->data))
-    {
-      front = p;
-      p = p->next;
-    }
-  return p==NULL;
+  Node<T> *p = this->head->next;
+  if(p == NULL)
+    return 1;
+  while(p->next != NULL && (asc ? p->data<=p->next->data : p->data>=p->next->data))
+    p = p->next;
+  return p->next ==NULL;
 }
 template <class T>
 T SinglyList<T>::max(SinglyList<T> &list)                      //返回list单链表最大值，T必须重载>
@@ -421,7 +436,7 @@ T SinglyList<T>::max(SinglyList<T> &list)                      //返回list单�
 template <class T>
 void SinglyList<T>::reverse(SinglyList<T> &list)            //将单链表逆转
 {
-  Node<T> *p = this->head->next, *front = NULL;         //front作为p的前驱结点
+  Node<T> *p = list.head->next, *front = NULL;         //front作为p的前驱结点
   while(p != NULL)
     {
       Node<T> *succ = p->next;       //设置succ为p的后继结点
@@ -429,7 +444,7 @@ void SinglyList<T>::reverse(SinglyList<T> &list)            //将单链表逆转
       front = p;                   //前驱到达p结点
       p = succ;//p到达原后继结点
     }
-  this->head->next = front;  //设置单链表头结点的指针域
+  list.head->next = front;  //设置单链表头结点的指针域
 }
 //5.SinglyList类增加对子链表的操作，函数声明见实验题2-1(3)
 template <class T>
