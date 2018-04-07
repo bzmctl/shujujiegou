@@ -49,7 +49,7 @@ public:
   T max(SinglyList<T> &list);                      //返回list单链表最大值，T必须重载>
   void reverse(SinglyList<T> &list);            //将单链表逆转
   //5.SinglyList类增加对子链表的操作，函数声明见实验题2-1(3)
-  SinglyList<T>& sub(int i,int n);                       //返回从第i个结点开始，长度为n的子表
+  SinglyList<T>* sub(int i,int n);                       //返回从第i个结点开始，长度为n的子表
   bool contain(SinglyList<T> &list);                   //判断*this单链表是否包含list所有结点
   void insert(int i,SinglyList<T> &list);               //复制list所有结点插入到*this第i个结点前
   void append(SinglyList<T> &list);                   //将list中所有结点复制添加到*this最后
@@ -447,20 +447,51 @@ void SinglyList<T>::reverse(SinglyList<T> &list)            //将单链表逆转
   list.head->next = front;  //设置单链表头结点的指针域
 }
 //5.SinglyList类增加对子链表的操作，函数声明见实验题2-1(3)
-template <class T>
-SinglyList<T>& SinglyList<T>::sub(int i,int n)                       //返回从第i个结点开始，长度为n的子表
-{
 
+/*
+//////////////////此处搞明白，必须得返回引用，不能为了快而模糊不清，敷衍了事！////////////////////////////////////
+//////////////////此处搞明白，必须得返回引用，不能为了快而模糊不清，敷衍了事！////////////////////////////////////
+//////////////////此处搞明白，必须得返回引用，不能为了快而模糊不清，敷衍了事！////////////////////////////////////
+//////////////////此处搞明白，必须得返回引用，不能为了快而模糊不清，敷衍了事！////////////////////////////////////
+//////////////////此处搞明白，必须得返回引用，不能为了快而模糊不清，敷衍了事！////////////////////////////////////
+//////////////////此处搞明白，必须得返回引用，不能为了快而模糊不清，敷衍了事！////////////////////////////////////
+////////////////  此函数原本返回应用，所以得重写SinglyList的拷贝构造函数，为深拷贝///////////////////////////////
+//明天任务：
+//1.返回引用，
+//2.返回对象，
+//3.返回指针，
+//查看三者之间的区别。
+ */
+template <class T>
+SinglyList<T>* SinglyList<T>::sub(int i,int n)                       //返回从第i个结点开始，长度为n的子表
+{
+  SinglyList<T> *subList = new SinglyList<T>();//创建空的子表
+  Node<T> *p = subList->head;
+  int j = 0,k=i+n;/*匹配要截取的子表结点*/
+  Node<T> *rear = this->head;
+  while(rear->next != NULL)
+    {
+      if(j >= i  &&  j < k)
+	{
+	  p->next = new Node<T>(rear->next->data,p->next);
+	  p = p->next;
+	}
+      rear = rear->next;
+      j++;
+      if(j >= k)
+	break;
+    }
+  return subList;
 }
 template <class T>
 bool SinglyList<T>::contain(SinglyList<T> &list)                   //判断*this单链表是否包含list所有结点
 {
-
+  
 }
 template <class T>
 void  SinglyList<T>::insert(int i,SinglyList<T> &list)               //复制list所有结点插入到*this第i个结点前
 {
-
+  
 }
 template <class T>
 void  SinglyList<T>::append(SinglyList<T> &list)                   //将list中所有结点复制添加到*this最后
