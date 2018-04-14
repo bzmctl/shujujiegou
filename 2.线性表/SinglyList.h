@@ -1,7 +1,13 @@
-#include "Node.h"                             //单链表节点类
+#include "Node.h"        //单链表节点类
+#include "mysort.h"                     
 //#include <stdio.h>                             
 #include <iostream>
 #include <stdexcept>
+//#include <memory>  //shared_ptr头文件
+#include <algorithm>    // std::sort
+#include <stdlib.h> //rand
+#include <time.h> //time
+#define RANDOM(x) (rand() % x)//得到一个随机数对x取余 即得到 0 至 x - 1的随机数,rand()函数本身是返回0到RAND_MAX, RAND_MAX = 32767  
 using namespace std;
 template <class T> class SinglyList;
 template <class T> ostream& operator<<(ostream&,SinglyList<T>&);
@@ -30,7 +36,10 @@ public:
   bool operator==(SinglyList<T> &list);        //比较两条单链表是否相等
   bool operator!=(SinglyList<T> &list);         //比较两条单链表是否不相等
   SinglyList(SinglyList<T> &list);                  //拷贝构造函数，深拷贝
+  //注意：
+  //由于函数形参是引用，所以当函数实参为对象时，会出现没有匹配的=赋值运算符
   SinglyList<T>& operator=(SinglyList<T> &list);  //重载=赋值运算符，深拷贝
+  
   virtual void operator+=(SinglyList<T> &list);//将list链接在当前链表之后;虚函数
 
   /*实验2-3*/
@@ -49,7 +58,9 @@ public:
   T max(SinglyList<T> &list);                      //返回list单链表最大值，T必须重载>
   void reverse(SinglyList<T> &list);            //将单链表逆转
   //5.SinglyList类增加对子链表的操作，函数声明见实验题2-1(3)
-  SinglyList<T>* sub(int i,int n);                       //返回从第i个结点开始，长度为n的子表
+  //SinglyList<T>* sub(int i,int n);                       //返回从第i个结点开始，长度为n的子表
+  SinglyList<T>& sub(int i,int n);                       //返回从第i个结点开始，长度为n的子表
+  // SinglyList<T> sub(int i,int n);                       //返回从第i个结点开始，长度为n的子表
   bool contain(SinglyList<T> &list);                   //判断*this单链表是否包含list所有结点
   void insert(int i,SinglyList<T> &list);               //复制list所有结点插入到*this第i个结点前
   void append(SinglyList<T> &list);                   //将list中所有结点复制添加到*this最后
@@ -63,6 +74,7 @@ public:
   void removeAll(SinglyList<T> list);                 //删除*this中所有与list匹配的子表
   void replaceAll(SinglyList<T> listkey,SinglyList<T> listx);//将所有与listkey匹配子表替换为listx
   void random();                                            //将单链表元素随即排列
+  bool eq(T a, T b);  //测试函数
 };
 
 //无参构造函数，构造空链表
@@ -455,19 +467,65 @@ void SinglyList<T>::reverse(SinglyList<T> &list)            //将单链表逆转
 //////////////////此处搞明白，必须得返回引用，不能为了快而模糊不清，敷衍了事！////////////////////////////////////
 //////////////////此处搞明白，必须得返回引用，不能为了快而模糊不清，敷衍了事！////////////////////////////////////
 //////////////////此处搞明白，必须得返回引用，不能为了快而模糊不清，敷衍了事！////////////////////////////////////
-////////////////  此函数原本返回应用，所以得重写SinglyList的拷贝构造函数，为深拷贝///////////////////////////////
+//////////////////此函数原本返回应用，所以得重写SinglyList的拷贝构造函数，为深拷贝///////////////////////////////
 //明天任务：
-//1.返回引用，
-//2.返回对象，
-//3.返回指针，
+//1.返回引用，由于是对当前对象进行直接处理，(除子表结点外的结点，并未处理，待修正。)
+//2.返回对象，如果要返回对象，需重载=赋值运算符的函数形参为对象，而不是当前的引用
+//3.返回指针，需记得释放空间
 //查看三者之间的区别。
  */
+
 template <class T>
-SinglyList<T>* SinglyList<T>::sub(int i,int n)                       //返回从第i个结点开始，长度为n的子表
+SinglyList<T>& SinglyList<T>::sub(int i,int n)                       //返回从第i个结点开始，长度为n的子表
 {
+  //函数外调用此函数后，需记得delete subList释放空间
   SinglyList<T> *subList = new SinglyList<T>();//创建空的子表
   Node<T> *p = subList->head;
-  int j = 0,k=i+n;/*匹配要截取的子表结点*/
+  int j = 0,k=i+n;//匹配要截取的子表结点
+  Node<T> *rear = this->head;
+  while(rear->next != NULL)
+    {
+      if(j >= i  &&  j < k)
+	{
+	  p->next = new Node<T>(rear->next->data,p->next);
+	  p = p->next;
+	}
+      rear = rear->next;
+      j++;
+      if(j >= k)
+	break;
+    }
+  return *subList;
+}
+/*
+template <class T>
+SinglyList<T> SinglyList<T>::sub(int i,int n)                       //返回从第i个结点开始，长度为n的子表
+{//注意此函数并未对除子表外的其他结点进行处理
+  int j = 0,k=i+n;//匹配要截取的子表结点
+  Node<T> *rear = this->head;
+  while(rear->next != NULL)
+    {
+      if(j == i)//获取子表首个结点
+	this->head->next = rear->next;
+      if(j == k)//使子表末尾结点指针域指向NULL
+	{
+	  rear->next = NULL;
+	  break;
+	}
+      rear = rear->next;
+      j++;
+    }
+  return *this;
+}
+*/
+/*
+template <class T>
+SinglyList<T>* SinglyList<T>::sub(int i,int n)                       //返回从第i个结点开始，长度为n的子表
+{//注意：
+//函数外调用此函数后，需记得delete subList释放空间
+  SinglyList<T> *subList = new SinglyList<T>();//创建空的子表
+  Node<T> *p = subList->head;
+  int j = 0,k=i+n;//匹配要截取的子表结点
   Node<T> *rear = this->head;
   while(rear->next != NULL)
     {
@@ -483,68 +541,301 @@ SinglyList<T>* SinglyList<T>::sub(int i,int n)                       //返回从
     }
   return subList;
 }
+*/
+
 template <class T>
 bool SinglyList<T>::contain(SinglyList<T> &list)                   //判断*this单链表是否包含list所有结点
 {
+  /*步骤：*/
+  /*1.单链表排序*/
+  Node<T> *cur_head = this->head,*l_head = list.head,*end = NULL;//排序单链表的头结点和尾结点
+  quick_sort(cur_head->next,end);//排序当前单链表
+  quick_sort(l_head->next,end);//排序list单链表
+  /*2.单链表去重*/
+  Node<T> *p = this->head->next,*p1=list.head->next;
+  while(p != NULL && p->next != NULL)
+    {
+      if(p->data == p->next->data)
+  	{
+  	  Node<T> *temp = p->next;
+  	  p->next = p->next->next;
+  	  delete temp;
+  	}
+      else
+  	{
+  	  p = p->next;
+  	}
+    }
   
+  while(p1 != NULL && p1->next != NULL)
+    {
+      if(p1->data == p1->next->data)
+  	{
+  	  Node<T> *temp = p1->next;
+  	  p1->next = p1->next->next;
+  	  delete temp;
+  	}
+      else
+	{
+	  p1 = p1->next;
+	}
+    }
+
+  /* 3.比较是否包含 */
+  p = this->head->next,p1 = list.head->next;
+  while(p != NULL && p1 != NULL)
+    {
+      if(p->data == p1->data)
+  	p1 = p1->next;
+      p = p->next;
+    }
+  return p1 == NULL;
 }
 template <class T>
 void  SinglyList<T>::insert(int i,SinglyList<T> &list)               //复制list所有结点插入到*this第i个结点前
 {
+  /*1.获取第i-1个结点*/
+  /*2.将list追加到this第i个结点前*/
+  /*3.将list头结点的指针域指向NULL*/
+  Node<T> *_i = this->head;
+  int j = 0;
+  while(_i->next != NULL && j < i-1)/*i-1获取i结点的前一个结点*/
+    {
+      _i = _i->next;
+      j++;
+    }
+  //当前_i即为当前单链表的第i-1个结点
+  //获取list的最后一个结点
+  
+  list.last()->next = _i->next;
+  _i->next = list.head->next;
+  
+  list.head->next = NULL;
   
 }
 template <class T>
 void  SinglyList<T>::append(SinglyList<T> &list)                   //将list中所有结点复制添加到*this最后
 {
-
+  Node<T> *_last = this->last();
+  _last->next = list.head->next;
+  list.head->next = NULL;
 }
 template <class T>
 SinglyList<T> SinglyList<T>::operator+(SinglyList<T> &list)    //返回*this与list合并连接后的单链表
 {
-
+  *this+=list;
+  return *this;
 }
 template <class T>
 void SinglyList<T>::remove(int i,int n)                               //删除从第i个结点开始，长度为n的子表
-{
-
+{//注意：第i个结点，i>=0,并且 i< *this单链表的长度
+  Node<T> *_i = this->head;
+  int j = 0;
+  while(_i->next != NULL)
+    {
+      if(j >= i && j < i+n)
+	{
+	  Node<T> *temp = _i->next;
+	  _i->next = temp->next;//此处注意是将_i的指针域指向要删除结点的下一个结点，要和while中表达式相对应
+	  delete temp;
+	  j++;
+	}
+      else
+	{
+	  _i = _i->next;
+	  j++;
+	}
+    }
+  
+  /* for(int j = 0; j < n; j++) */
+  /*   remove(i); */
 }
 template <class T>
 SinglyList<T>& SinglyList<T>::operator*(SinglyList<T> &list)     //返回*this与list的所有共同元素，交集
 {
-
+  /*步骤：*/
+  /* 1.排序 */
+  Node<T> *cur = this->head->next,*_l = list.head->next,*end = NULL;
+  quick_sort(cur,end);
+  quick_sort(_l,end);
+  /* 2. 去重*/
+  while(cur != NULL && cur->next != NULL)
+    {
+      if(cur->data == cur->next->data)
+	{
+	  Node<T> *temp = cur->next;
+	  cur->next = temp->next;
+	  delete temp;
+	}
+      else
+	cur = cur->next;
+    }
+  while(_l != NULL && _l->next != NULL)
+    {
+      if(_l->data == _l->next->data)
+	{
+	  Node<T> *temp = _l->next;
+	  _l->next = temp->next;
+	  delete temp;
+	}
+      else
+	_l = _l->next;
+    }
+  /* 3.查找共同元素 */
+  SinglyList<T> *_temp = new SinglyList<T>();//用于存储共同元素
+  Node<T> *_i = _temp->head;
+  cur = this->head->next,_l = list.head->next;
+  while(cur != NULL && _l != NULL)
+    {
+      if(cur->data == _l->data)
+	{
+	  _i->next = new Node<T>(cur->data,_i->next);
+	  _i = _i->next;
+	  cur = cur->next;
+	  _l = _l->next;
+	}
+      else if(cur->data < _l->data)
+	cur = cur->next;
+      else if(_l->data < cur->data)
+	_l = _l->next;
+    }
+  /* cout<<*this; */
+  /* cout<<list; */
+  /* cout<<*_temp; */
+  this->removeAll();//清空当前单链表
+  this->head->next = _temp->head->next;//将存储共同元素的单链表追加到当前单链表
+  _temp->head->next = NULL; //使临时存储共同元素的单链表头结点的指针域指向NULL
+  delete _temp;//释放临时空间
+  return *this;
 }
 template <class T>
-void SinglyList<T>::operator-=(SinglyList<T> &list)              //删除那些也包含在list中的元素，差集
+void SinglyList<T>::operator-=(SinglyList<T> &list)              //删除那些也包含在list中的元素，差集(即把this中属于list中的元素删掉)
 {
-
+  //步骤：
+  /* 一.找到共同元素 */
+  /*步骤：*/
+  /* 1.排序 */
+  Node<T> *cur = this->head->next,*_l = list.head->next,*end = NULL;
+  quick_sort(cur,end);
+  quick_sort(_l,end);
+  /* 2. 去重*/
+  while(cur != NULL && cur->next != NULL)
+    {
+      if(cur->data == cur->next->data)
+	{
+	  Node<T> *temp = cur->next;
+	  cur->next = temp->next;
+	  delete temp;
+	}
+      else
+	cur = cur->next;
+    }
+  while(_l != NULL && _l->next != NULL)
+    {
+      if(_l->data == _l->next->data)
+	{
+	  Node<T> *temp = _l->next;
+	  _l->next = temp->next;
+	  delete temp;
+	}
+      else
+	_l = _l->next;
+    }
+  /* 3.查找共同元素 */
+  SinglyList<T> *_temp = new SinglyList<T>();//用于存储共同元素
+  Node<T> *_i = _temp->head;
+  cur = this->head->next,_l = list.head->next;
+  while(cur != NULL && _l != NULL)
+    {
+      if(cur->data == _l->data)
+	{
+	  _i->next = new Node<T>(cur->data,_i->next);
+	  _i = _i->next;
+	  cur = cur->next;
+	  _l = _l->next;
+	}
+      else if(cur->data < _l->data)
+	cur = cur->next;
+      else if(_l->data < cur->data)
+	_l = _l->next;
+    }
+  /* cout<<*this<<list; */
+  /* 二.删除共同元素 */
+  cur = this->head;
+  _i = _temp->head;
+  while(cur->next != NULL && _i->next != NULL)
+    {
+      if(cur->next->data == _i->next->data)
+	{
+	  Node<T> *temp = cur->next;
+	  cur->next = temp->next;
+	  _i = _i->next;
+	  delete temp;
+	}
+      else if(cur->next->data < _i->next->data)
+	cur = cur->next;
+      else if(_i->next->data < cur->next->data)
+	_i = _i->next;
+    }
+  //  cout<<*this;
+  delete _temp;//释放空间
 }
 template <class T>
 SinglyList<T> SinglyList<T>::operator-(SinglyList<T> &list)     //返回*this与list的差集
 {
-
+  *this-=list;
+  return *this;
 }
 template <class T>
 void SinglyList<T>::retainAll(SinglyList<T> &list)                  //仅保留那些也包含在list中的元素
 {
-
+  *this*list;
 }
 template <class T>
 SinglyList<T>* SinglyList<T>::search(SinglyList<T> &list)          //判断*this是否包含与list匹配的子表
 {
-
+  *this*list;
+  return this;
 }
 template <class T>
 void SinglyList<T>::removeAll(SinglyList<T> list)                 //删除*this中所有与list匹配的子表
 {
-
+  *this-list;
 }
 template <class T>
 void SinglyList<T>::replaceAll(SinglyList<T> listkey,SinglyList<T> listx)//将所有与listkey匹配子表替换为listx
 {
-
+  this->removeAll(listkey);
+  this->append(listx);
 }
+
 template <class T>
 void SinglyList<T>::random()                                            //将单链表元素随即排列
 {
+  cout<<*this;
+  T temp;
+  Node<T> *_list = this->head->next;
+ 
+  //time_t time(time_t *time);  time(0)用来获得1970年1月1日0时0分0秒到当前时间的秒数 
+  srand((int)time(0));//Srand是种下随机种子数，每次种下的种子不一样，用Rand得到的随机数就不一样  
+  
+  while(_list != NULL && _list->next != NULL)
+    {
+      int flag = RANDOM(2);
+      cout<<flag<<endl;
+      if(flag > 0)
+  	{
+  	  temp = _list->data;
+  	  _list->data = _list->next->data;
+  	  _list->next->data = temp;
+  	}
+      _list = _list->next;
+    }
+  cout<<*this;
+}
 
+template <typename T>
+bool SinglyList<T>::eq(T a, T b)
+{
+  return a==b;
 }
