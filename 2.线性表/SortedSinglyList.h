@@ -11,6 +11,7 @@ class SortedSinglyList:public SinglyList<T>{
  public:
   SortedSinglyList(bool asc=true);//构造空排序单链表，asc指定升序或降序
   SortedSinglyList(T values[],int n,bool asc=true);  //由values数组元素构造排序单链表
+  /*2-5*/
   SortedSinglyList(SinglyList<T> &list,bool asc=true);  //由单链表构造排序单链表
 
   void set(int i,T x);  //不支持该操作，抛出异常；覆盖

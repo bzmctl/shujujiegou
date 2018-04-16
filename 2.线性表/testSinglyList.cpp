@@ -16,7 +16,8 @@ struct F {
       c1[] = {Computer(1,8),Computer(1,16),Computer(1,2),Computer(1,32)},
       c2[] = {Computer(1,64)},
       c3[] = {Computer(1,1),Computer(1,128)};
-	  
+      int arr[] = {1,2,3,4,5,6,7,8,9,10,11,102};
+
       this->first = first;
       this->last = last;
       this->last1 = last1;
@@ -25,7 +26,7 @@ struct F {
       list1 = new SinglyList<Computer>(c1,4);
       list2 = new SinglyList<Computer>(c2,1);
       list3 = new SinglyList<Computer>(c3,2);
-
+      i_list = new SinglyList<int>(arr,12);
   }
   ~F()
   { 
@@ -34,18 +35,22 @@ struct F {
     delete list1;
     delete list2;
     delete list3;
+    delete i_list;
   }
 
   Computer first,last,last1,last2;
   SinglyList<Computer> *list,*list1,*list2,*list3;
-  
+  SinglyList<int> *i_list;
 };
 
 BOOST_FIXTURE_TEST_SUITE(s, F)
 
-BOOST_AUTO_TEST_CASE(test_case1)
+BOOST_AUTO_TEST_CASE(test_average)
 {
-  
+  double res = i_list->average(*i_list);
+  BOOST_CHECK_EQUAL(res,14);
+  double res1 = i_list->averageExceptMaxMin(*i_list);
+  BOOST_CHECK_EQUAL(res1,6.5);
 }
 
 BOOST_AUTO_TEST_CASE(test_sub)
@@ -151,6 +156,8 @@ BOOST_AUTO_TEST_CASE(test_replaceAll_listkey_to_listx)
 
 BOOST_AUTO_TEST_CASE(test_random)
 {
+  cout<<*list1;
   list1->random();
+  cout<<*list1;
 }
 BOOST_AUTO_TEST_SUITE_END()

@@ -9,8 +9,8 @@
 #include <time.h> //time
 #define RANDOM(x) (rand() % x)//得到一个随机数对x取余 即得到 0 至 x - 1的随机数,rand()函数本身是返回0到RAND_MAX, RAND_MAX = 32767  
 using namespace std;
-template <class T> class SinglyList;
-template <class T> ostream& operator<<(ostream&,SinglyList<T>&);
+//template <class T> class SinglyList;
+//template <class T> ostream& operator<<(ostream&,SinglyList<T>&);
 template <class T>
 class SinglyList{                                  //带头结点的单链表类，T指定元素类型，T必须重载==关系运算符
 public:
@@ -24,7 +24,7 @@ public:
   int count();                                      //返回单链表长度
   T& get(int i);                                    //返回第i(i>=0)个元素的引用
   virtual void set(int i,T x);                  //设置第i（i>=0）个元素的值为x
-  friend ostream& operator<<<>(ostream&,SinglyList<T>&);    //输出单链表所有元素
+  template <typename K> friend ostream& operator<<(ostream&,SinglyList<K>&);    //输出单链表所有元素
   Node<T>* insert(int i,T x);              //插入x作为第i个结点，返回插入结点的地址
   virtual Node<T>* insert(T x);          //在单链表最后插入x，虚函数
   T remove(int i);                               //删除第i(i>=0)个结点，返回被删除元素
@@ -75,6 +75,9 @@ public:
   void replaceAll(SinglyList<T> listkey,SinglyList<T> listx);//将所有与listkey匹配子表替换为listx
   void random();                                            //将单链表元素随即排列
   bool eq(T a, T b);  //测试函数
+  /*2-4 整数单链表的计算*/
+  double average(SinglyList<T> &list);//计算整数单链表的平均值
+  double averageExceptMaxMin(SinglyList<T> &list);//去掉最高分和最低分求平均值
 };
 
 //无参构造函数，构造空链表
@@ -113,11 +116,11 @@ bool SinglyList<T>::empty()//O(1)
 }
 
 //重写的<<操作符，用于输出单链表元素到控制台
-template <class T>
-ostream& operator<<(ostream &out,SinglyList<T> &list)
+template <typename K>
+ostream& operator<<(ostream &out,SinglyList<K> &list)
 {
   out<<"(";
-  for(Node<T> *next=list.head->next; next != NULL; next = next->next)
+  for(Node<K> *next=list.head->next; next != NULL; next = next->next)
     {
       out<<next->data;
       if(next->next != NULL)
@@ -812,7 +815,7 @@ void SinglyList<T>::replaceAll(SinglyList<T> listkey,SinglyList<T> listx)//将�
 template <class T>
 void SinglyList<T>::random()                                            //将单链表元素随即排列
 {
-  cout<<*this;
+  // cout<<*this;
   T temp;
   Node<T> *_list = this->head->next;
  
@@ -822,7 +825,7 @@ void SinglyList<T>::random()                                            //将单
   while(_list != NULL && _list->next != NULL)
     {
       int flag = RANDOM(2);
-      cout<<flag<<endl;
+      // cout<<flag<<endl;
       if(flag > 0)
   	{
   	  temp = _list->data;
@@ -831,11 +834,44 @@ void SinglyList<T>::random()                                            //将单
   	}
       _list = _list->next;
     }
-  cout<<*this;
+  // cout<<*this;
 }
-
 template <typename T>
 bool SinglyList<T>::eq(T a, T b)
 {
   return a==b;
+}
+template <>//模板特例化成员
+double SinglyList<int>::average(SinglyList<int> &list)//计算整数单链表的平均值
+{
+  Node<int> *p = list.head;
+  int count = 0;
+  double sum = 0;//此处用double，不用int，否则返回值成int
+  while(p->next != NULL)
+    {
+      p = p->next;
+      sum += p->data;
+      count++;
+    }
+  return sum / count;
+}
+template <>
+double SinglyList<int>::averageExceptMaxMin(SinglyList<int> &list)//去掉最高分和最低分求平均值
+{
+  Node<int> *p = list.head;
+  int count = 0;
+  double sum = 0;
+  int min = p->next->data;
+  int max = min;
+  while(p->next != NULL)
+    {
+      p = p->next;
+      sum += p->data;
+      count++;
+      if(p->data < min)
+	min = p->data;
+      if(max < p->data)
+	max = p->data;
+    }
+  return (sum-max-min) / (count-2);
 }
