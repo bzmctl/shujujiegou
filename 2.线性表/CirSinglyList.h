@@ -43,18 +43,18 @@ class CirSinglyList
   T max(CirSinglyList<T> &list);                          //返回list循环单链表最大值，T必须重载>
   void reverse(CirSinglyList<T> &list);                   //将循环单链表逆转
   CirSinglyList<T>& sub(int i,int n);                     //返回从第i个结点开始，长度为n的子表
-  bool contain(CirSinglyList<T> &list);                   //判断*this循环单链表是否包含list所有结点
-  void insert(int i,CirSinglyList<T> &list);              //复制list所有结点插入到*this第i个结点前
-  void append(CirSinglyList<T> &list);                    //将list中所有结点复制添加到*this最后
-  CirSinglyList<T> operator+(CirSinglyList<T> &list);     //返回*this与list合并连接后的循环单链表
+  virtual bool contain(CirSinglyList<T> &list);                   //判断*this循环单链表是否包含list所有结点
+  virtual void insert(int i,CirSinglyList<T> &list);      //复制list所有结点插入到*this第i个结点前
+  virtual void append(CirSinglyList<T> &list);                    //将list中所有结点复制添加到*this最后
+  virtual CirSinglyList<T> operator+(CirSinglyList<T> &list);     //返回*this与list合并连接后的循环单链表
   void remove(int i,int n);                               //删除从第i个结点开始，长度为n的子表
-  CirSinglyList<T>& operator*(CirSinglyList<T> &list);    //返回*this与list的所有共同元素，交集
-  void operator-=(CirSinglyList<T> &list);                //删除那些也包含在list中的元素，差集
-  CirSinglyList<T> operator-(CirSinglyList<T> &list);     //返回*this与list的差集
-  void retainAll(CirSinglyList<T> &list);                 //仅保留那些也包含在list中的元素
-  CirSinglyList<T>* search(CirSinglyList<T> &list);       //判断*this是否包含与list匹配的子表
-  void removeAll(CirSinglyList<T> list);                  //删除*this中所有与list匹配的子表
-  void replaceAll(CirSinglyList<T> listkey,CirSinglyList<T> listx);//将所有与listkey匹配子表替换为listx
+  virtual CirSinglyList<T>& operator*(CirSinglyList<T> &list);    //返回*this与list的所有共同元素，交集
+  virtual void operator-=(CirSinglyList<T> &list);                //删除那些也包含在list中的元素，差集
+  virtual CirSinglyList<T> operator-(CirSinglyList<T> &list);     //返回*this与list的差集
+  virtual void retainAll(CirSinglyList<T> &list);                 //仅保留那些也包含在list中的元素
+  virtual CirSinglyList<T>* search(CirSinglyList<T> &list);       //判断*this是否包含与list匹配的子表
+  virtual void removeAll(CirSinglyList<T> list);                  //删除*this中所有与list匹配的子表
+  virtual void replaceAll(CirSinglyList<T> listkey,CirSinglyList<T> listx);//将所有与listkey匹配子表替换为listx
   void random();                                          //将循环单链表元素随即排列
   bool eq(T a, T b);                                      //测试函数
   double average(CirSinglyList<T> &list);                 //计算整数循环单链表的平均值
@@ -67,6 +67,7 @@ CirSinglyList<T>::CirSinglyList()                   //构造空链表
 {
   this->head = new Node<T>();        //创建头结点，data数据域未初始化
   this->head->next = this->head;     //使头结点的指针域指向自己，构建循环单链表
+  cout<<"CirSinglyList()被调用！\n";
 }
 
 //带参构造方法，由values数组元素构造循环单链表
@@ -81,6 +82,7 @@ CirSinglyList<T>::CirSinglyList(T values[],int n)  //构造循环单链表，由
       rear->next = new Node<T>(values[i],rear->next);  //创建结点链入rear结点之后，尾插入
       rear = rear->next;//去掉这句，则构造的是反序循环单链表
     }
+  cout<<"CirSinglyList(T values[],int n)被调用！\n";
 }
 
 //析构函数，释放空间
@@ -89,6 +91,7 @@ CirSinglyList<T>::~CirSinglyList()
 {
   this->removeAll();
   delete this->head;
+  cout<<"~CirSinglyList()被调用！\n";
 }
 
 //用于判断循环单链表是否为空

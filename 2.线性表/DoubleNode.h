@@ -16,5 +16,5 @@ class DoubleNode
       this->next = next;
     }
   //注意：DoubleNode构造函数有两个缺省参数，当只有一个参数时，意为后一个参数缺省
-  //如：DoubleNOde<T> *p = new DoubleNode<T>(x,front);  //front指向前驱结点，后继结点为空
+  //如：DoubleNode<T> *p = new DoubleNode<T>(x,front);  //front指向前驱结点，后继结点为空
 };
