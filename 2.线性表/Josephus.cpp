@@ -39,8 +39,8 @@ void tjxx()
   Student group[]={{"111",56},{"22",71},{"33",69},{"44",98},{"55",89},{"66",85},{"77",90}};
   SeqList<Student> list(group,7);
   int grade[]={0,60,70,80,90,100};
-  const int N=5;
-  int result[N]={0};
+  const int NUM=5;
+  int result[NUM]={0};
   const char* str[]={"不及格","及格","中等","良好","优秀"};
   groupCount(list,grade,6,result);
   cout<<"学生集合"<<list;
@@ -54,7 +54,7 @@ void tjxx()
 int
 main()
 {
-      josephus(26,13,6);
+  //  josephus(26,13,6);
   tjxx();
   return 0;
 }
