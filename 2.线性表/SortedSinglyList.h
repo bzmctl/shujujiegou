@@ -7,7 +7,6 @@ template <class T> ostream& operator<<(ostream &out,SortedSinglyList<T>* list);
 //排序单链表类，T必须重载==,！=,>,>=,<,<=关系运算符
 template <class T>
 class SortedSinglyList:public SinglyList<T>{
-  bool asc;    //排序次序约定，asc的取值：true升序，false降序
  public:
   SortedSinglyList(bool asc=true);//构造空排序单链表，asc指定升序或降序
   SortedSinglyList(T values[],int n,bool asc=true);  //由values数组元素构造排序单链表
@@ -20,7 +19,9 @@ class SortedSinglyList:public SinglyList<T>{
   Node<T>* search(T key);  //顺序查找首次出现的关键字为key元素；覆盖
   void removeFirst(T key);  //删除首次出现的关键字为key元素的结点；覆盖
   friend ostream& operator<<<>(ostream &out,SortedSinglyList<T>* list);
-  void print();
+  //  void print();
+ private:
+  bool asc;    //排序次序约定，asc的取值：true升序，false降序
 };
 
 //构造空的排序单链表，asc指定升序，降序，此处执行SinglyList<T>(),创建头结点

@@ -7,9 +7,6 @@
 #include <algorithm> // std::sort
 #include <stdlib.h> //rand
 #include <time.h> //time
-#include <string>
-#include <fstream>//从文件读取文件
-#include <sstream>
 #define RANDOM(x) (rand() % x)//得到一个随机数对x取余 即得到 0 至 x - 1的随机数,rand()函数本身是返回0到RAND_MAX, RAND_MAX = 32767  
 using namespace std;
 //template <class T> class SinglyList;
@@ -21,7 +18,7 @@ public:
   
   SinglyList();                                                      //构造空单链表
   SinglyList(T values[],int n);                               //构造单链表，由values数组提供元素
-  SinglyList(string path);//由指定文件提供数据构造单链表
+  /* SinglyList(string path);//由指定文件提供数据构造单链表 */
   ~SinglyList();                                                   //析构函数
   
   bool empty();                                                   //判断单链表是否为空
@@ -84,12 +81,12 @@ public:
   double averageExceptMaxMin(SinglyList<T> &list);    //去掉最高分和最低分求平均值
   /*2-9使用SinglyList类管理Student成绩表*/
   //double getScore(T x,int i);//获取指定课程的成绩
-  double averagestusc(int i);//获取指定课程的平均值,list学生集合，i(指定哪门课程)
-  //统计学生成绩信息，s指定哪门课程，grade成绩分段数组，n成绩分段个数，result成绩在每个分段内的人数
-  void groupCount(int s,int grade[],int n,int result[]);
-  void sort();//排序,按成绩排序
-  ifstream& readfile(ifstream &in,string path);//从文件中读取对象，并将其使用SinglyList<T>存储
-  ofstream& savefile(ofstream &out,  string path);//将SinglyList<T>数据存储在指定文件中
+  /* double averagestusc(int i);//获取指定课程的平均值,list学生集合，i(指定哪门课程) */
+  /* //统计学生成绩信息，s指定哪门课程，grade成绩分段数组，n成绩分段个数，result成绩在每个分段内的人数 */
+  /* void groupCount(int s,int grade[],int n,int result[]); */
+  /* //  void sort();//排序,按成绩排序 */
+  /* ifstream& readfile(ifstream &in,string path);//从文件中读取对象，并将其使用SinglyList<T>存储 */
+  /* ofstream& savefile(ofstream &out,  string path);//将SinglyList<T>数据存储在指定文件中 */
   
 };
 
@@ -112,19 +109,21 @@ SinglyList<T>::SinglyList(T values[],int n)  //构造单链表，由values数组
       rear = rear->next;  //rear指向新的链尾结点
     }
 }
-template <class T>
-SinglyList<T>::SinglyList(string path)
-{
-  this->head = new Node<T>();
-  ifstream in;
-  readfile(in,path);
-}
+/* template <class T> */
+/* SinglyList<T>::SinglyList(string path) */
+/* { */
+/*   this->head = new Node<T>(); */
+/*   ifstream in; */
+/*   readfile(in,path); */
+/* } */
 //析构函数，释放空间
 template <class T>
 SinglyList<T>::~SinglyList()
 {
   this->removeAll();
   delete this->head;
+  this->head = NULL;
+  cout<<"SinglyList析构函数\n";
 }
 
 //用于判断单链表是否为空
@@ -901,87 +900,82 @@ double SinglyList<Student>::getScore(Student &stu,int i)//返回指定学生的�
   return stu.score[i];
 }
 */
-template<>
-double SinglyList<Student>::averagestusc(int i)
-{
-  Node<Student> *p = this->head;
-  double sum = 0;
-  int count = 0;
-  while(p->next != NULL)
-    {
-      sum += p->next->data.score[i];
-      count++;
-      p = p->next;
-    }
-  return sum / count;
-}
-template<>
-void SinglyList<Student>::groupCount(int s,int grade[],int n,int result[])
-{
-  Node<Student> *p = this->head;
-  while(p->next != NULL)
-    {
-      p = p->next;
-      Student stu = p->data;
-      if(stu.score[s] == 100)
-      	{
-      	  result[5]++;
-      	  continue;
-      	}
-      for(int j=0;j<n-1;j++)
-	{
-	  if(stu.score[s]>=grade[j] && stu.score[s]<grade[j+1])
-	    {	   
-	      result[j]++;
-	      break;
-	    }
-	  /* else if(stu.score[s] == 100) */
-	  /*   { */
-	  /*     result[5]++; */
-	  /*     break; */
-	  /*   } */
-	}
-    }
-}
-template<>
-void SinglyList<Student>::sort()
-{
-  Node<Student> *cur = this->head,*end = NULL;
-  quick_sort(cur->next,end);
-}
-template<>
-ifstream& SinglyList<Student>::readfile(ifstream &in,string path)
-{
-  auto old_state = in.rdstate();//记住in的当前状态
-  in.clear();                       //使in有效
-  string line;
-  in.open(path,ifstream::in);
-  Student stu;
-  while(getline(in,line))//读取一行内容
-    {
-      istringstream record (line);//将记录绑定到刚读入的行
-      record>>stu.name;//给学生名字赋值
-      record>>stu.number;
-      int k = 0;
-      while(record >> stu.score[k])
-	k++;
-      this->insert(stu);
-    }
-  in.setstate(old_state);
-  return in;
-}
-template <typename T>
-ofstream& SinglyList<T>::savefile(ofstream &out, string path)
-{
-  auto old_state = out.rdstate();//记住out的当前状态
-  out.clear();                       //使out有效
-  out.open(path);
-  Node<T> *p =this->head;
-  while(p->next != NULL)
-    {
-      p = p->next;
-      out<<p->data<<endl;
-    }
-  out.setstate(old_state);
-  return out;
-}
+/* template<> */
+/* double SinglyList<Student>::averagestusc(int i) */
+/* { */
+/*   Node<Student> *p = this->head; */
+/*   double sum = 0; */
+/*   int count = 0; */
+/*   while(p->next != NULL) */
+/*     { */
+/*       sum += p->next->data.score[i]; */
+/*       count++; */
+/*       p = p->next; */
+/*     } */
+/*   return sum / count; */
+/* } */
+/* template<> */
+/* void SinglyList<Student>::groupCount(int s,int grade[],int n,int result[]) */
+/* { */
+/*   Node<Student> *p = this->head; */
+/*   while(p->next != NULL) */
+/*     { */
+/*       p = p->next; */
+/*       Student stu = p->data; */
+/*       if(stu.score[s] == 100) */
+/*       	{ */
+/*       	  result[5]++; */
+/*       	  continue; */
+/*       	} */
+/*       for(int j=0;j<n-1;j++) */
+/* 	{ */
+/* 	  if(stu.score[s]>=grade[j] && stu.score[s]<grade[j+1]) */
+/* 	    {	    */
+/* 	      result[j]++; */
+/* 	      break; */
+/* 	    } */
+/* 	} */
+/*     } */
+/* } */
+/* template<> */
+/* void SinglyList<Student>::sort() */
+/* { */
+/*   Node<Student> *cur = this->head,*end = NULL; */
+/*   quick_sort(cur->next,end); */
+/* } */
+/* template<> */
+/* ifstream& SinglyList<Student>::readfile(ifstream &in,string path) */
+/* { */
+/*   auto old_state = in.rdstate();//记住in的当前状态 */
+/*   in.clear();                       //使in有效 */
+/*   string line; */
+/*   in.open(path,ifstream::in); */
+/*   Student stu; */
+/*   while(getline(in,line))//读取一行内容 */
+/*     { */
+/*       istringstream record (line);//将记录绑定到刚读入的行 */
+/*       record>>stu.name;//给学生名字赋值 */
+/*       record>>stu.number; */
+/*       int k = 0; */
+/*       while(record >> stu.score[k]) */
+/* 	k++; */
+/*       this->insert(stu); */
+/*     } */
+/*   in.setstate(old_state); */
+/*   return in; */
+/* } */
+/* template <typename T> */
+/* ofstream& SinglyList<T>::savefile(ofstream &out, string path) */
+/* { */
+/*   auto old_state = out.rdstate();//记住out的当前状态 */
+/*   out.clear();                       //使out有效 */
+/*   out.open(path); */
+/*   Node<T> *p =this->head; */
+/*   while(p->next != NULL) */
+/*     { */
+/*       p = p->next; */
+/*       out<<p->data<<endl; */
+/*     } */
+/*   out.setstate(old_state); */
+/*   return out; */
+/* } */

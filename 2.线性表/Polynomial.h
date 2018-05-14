@@ -1,5 +1,6 @@
 /*一元多项式的链式存储结构*/
 #include "SortedSinglyList.h"                           //排序单链表
+#include <string>
 template <class T>
 class Polynomial:public SortedSinglyList<T>          //多项式排序单链表，继承排序单链表
 {
@@ -12,3 +13,19 @@ class Polynomial:public SortedSinglyList<T>          //多项式排序单链表�
   void operator+=(Polynomial<T> &poly);   //*this与多项式poly相加
   Polynomial<T> operator+(Polynomial<T> &poly);            //返回*this与poly相加后的多项式
 };
+Polynomial<T>::Polynomial(char * polystr)
+{
+  
+}
+void Polynomial<T>::print()
+{
+  
+}
+void Polynomial<T>::operator+=(Polynomial<T> &poly)
+{
+
+}
+Polynomial<T> Polynomial<T>::operator+(Polynomial<T> &poly)
+{
+
+}
