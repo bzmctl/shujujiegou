@@ -15,7 +15,8 @@ class Polynomial:public SortedSinglyList<T>          //多项式排序单链表�
 };
 Polynomial<T>::Polynomial(char * polystr)
 {
-  
+  string str(polystr);
+  //步骤：然后按步骤编码
 }
 void Polynomial<T>::print()
 {

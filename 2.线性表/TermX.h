@@ -44,7 +44,19 @@ inline TermX::TermX(const char *termstr)
 }
 ostream& operator<<(ostream & out,const TermX& term)
 {
-  out<<term.coef<<"x^"<<term.xexp;
+  if(term.xexp > 0)
+    {
+      if(term.coef == 1)
+	out<<"x^"<<term.xexp;
+      else if(term.coef == -1)
+	out<<"-x^"<<term.xexp;
+      else
+	out<<term.coef<<"x^"<<term.xexp;	
+    }
+  else if(term.xexp == 0)
+    out<<term.coef;
+  else if(term.xexp ==1)
+    out<<term.coef<<"x";
   return out;
 }
 inline bool TermX::operator==(TermX &term)

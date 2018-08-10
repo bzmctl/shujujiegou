@@ -2,7 +2,7 @@
 #include <stdexcept>
 //using namespace std;
 template <class T> class SortedSinglyList;
-template <class T> ostream& operator<<(ostream &out,SortedSinglyList<T>* list);
+template <class T> ostream& operator<<(ostream &out,SortedSinglyList<T>*);/*不能动态联编，当基类引用指向派生类实例时，调用的是基类的方法*/
 
 //排序单链表类，T必须重载==,！=,>,>=,<,<=关系运算符
 template <class T>
@@ -16,9 +16,9 @@ class SortedSinglyList:public SinglyList<T>{
   void set(int i,T x);  //不支持该操作，抛出异常；覆盖
   Node<T>* insert(T x);  //插入，根据x大小确定插入位置；覆盖
   Node<T>* insertUnrepeatable(T x);  //插入不重复元素，返回插入结点地址；覆盖
-  Node<T>* search(T key);  //顺序查找首次出现的关键字为key元素；覆盖
+  /* Node<T>* search(T key);  //顺序查找首次出现的关键字为key元素；覆盖 */
   void removeFirst(T key);  //删除首次出现的关键字为key元素的结点；覆盖
-  friend ostream& operator<<<>(ostream &out,SortedSinglyList<T>* list);
+  friend ostream& operator<<<>(ostream &out,SortedSinglyList<T>*);
   //  void print();
  private:
   bool asc;    //排序次序约定，asc的取值：true升序，false降序
